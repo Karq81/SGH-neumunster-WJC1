@@ -43,6 +43,13 @@
                   color: #fff; background: var(--accent); border: 0; border-radius: 8px; cursor: pointer; }
   button.submit:hover { background: var(--accent-dark); }
   button.submit:disabled { opacity: .6; cursor: wait; }
+  .echeck { display: none; margin-top: 8px; padding: 10px 12px; border-radius: 8px; font-size: 14px; }
+  .echeck.ok { display: block; background: rgba(31,138,76,.12); color: var(--ok); }
+  .echeck.bad { display: block; background: rgba(192,57,43,.1); color: var(--err); }
+  .echeck.warn { display: block; background: rgba(230,145,0,.14); color: var(--text); border: 1px solid rgba(230,145,0,.6); }
+  .echeck button { margin-top: 8px; padding: 6px 12px; border: 0; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  .echeck label { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0 0; font-weight: 600; }
+  .echeck label input { margin-top: 3px; width: 18px; height: 18px; flex: none; }
   .msg { margin-top: 14px; padding: 12px; border-radius: 8px; display: none; }
   .msg.err { display: block; background: rgba(192,57,43,.1); color: var(--err); }
   .done { text-align: center; display: none; }
@@ -148,6 +155,7 @@
 
       <label for="email"><span data-t="email"></span><br><span class="hint" data-t="emailHint"></span></label>
       <input type="email" id="email" autocomplete="email" inputmode="email" required maxlength="120" placeholder="name@gmail.com">
+      <div class="echeck" id="echeck" role="status"></div>
 
       <button type="button" class="howto-btn" id="howtoBtn" data-t="howtoBtn"></button>
       <div class="howto" id="howto">
@@ -246,6 +254,13 @@
       thanks: 'Danke! Sie sind eingetragen.',
       thanks2: 'Sobald wir ein Video oder einen Livestream freigeben, bekommen Sie Zugriff mit Ihrem YouTube-Konto.',
       errName: 'Bitte Vornamen eingeben.',
+      emailOk: '✓ Google-Konto (Gmail) – passt.',
+      emailTypo: 'Tippfehler? Meinten Sie {s}?',
+      emailFix: 'Ja, korrigieren',
+      emailWarn: 'Achtung: {d} ist keine Gmail-Adresse. YouTube funktioniert nur mit der E-Mail Ihres Google-Kontos – mit einer anderen Adresse können Sie die Videos NICHT sehen. Das ist meist Ihre @gmail.com-Adresse (siehe Anleitung unten).',
+      emailWarnConfirm: 'Ich bin sicher: Mit genau dieser E-Mail bin ich bei YouTube/Google angemeldet.',
+      errEmailTypo: 'Bitte die E-Mail-Adresse korrigieren (Tippfehler).',
+      errEmailConfirm: 'Diese Adresse ist keine Gmail-Adresse. Bitte prüfen und bestätigen – oder Ihre Gmail-Adresse eintragen.',
       errEmail: 'Bitte eine gültige E-Mail-Adresse eingeben.',
       errConsent: 'Bitte die Einwilligung bestätigen.',
       errServer: 'Das hat leider nicht geklappt. Bitte später erneut versuchen.',
@@ -289,6 +304,13 @@
       thanks: 'Dziękujemy! Jesteś na liście.',
       thanks2: 'Gdy udostępnimy film lub transmisję, zobaczysz je po zalogowaniu na swoje konto YouTube.',
       errName: 'Podaj imię.',
+      emailOk: '✓ Konto Google (Gmail) – pasuje.',
+      emailTypo: 'Literówka? Czy chodziło o {s}?',
+      emailFix: 'Tak, popraw',
+      emailWarn: 'Uwaga: {d} to nie jest adres Gmail. YouTube działa tylko z adresem Twojego konta Google – z innym adresem NIE zobaczysz filmów. Zwykle to Twój adres @gmail.com (zobacz instrukcję poniżej).',
+      emailWarnConfirm: 'Jestem pewien/pewna: dokładnie tym adresem loguję się do YouTube/Google.',
+      errEmailTypo: 'Popraw adres e-mail (literówka).',
+      errEmailConfirm: 'To nie jest adres Gmail. Sprawdź i potwierdź – albo wpisz swój adres Gmail.',
       errEmail: 'Podaj poprawny adres e-mail.',
       errConsent: 'Zaznacz zgodę.',
       errServer: 'Niestety coś poszło nie tak. Spróbuj ponownie później.',
@@ -306,6 +328,7 @@
     document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
     document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
     document.title = t('title');
+    if (document.getElementById('echeck')) checkEmail();
     if (document.getElementById('stepcap')) document.getElementById('stepcap').textContent = t('step' + (step + 1));
   }
 
@@ -333,6 +356,45 @@
   $('prevStep').addEventListener('click', () => { showStep(step - 1); autoplay(); });
   $('nextStep').addEventListener('click', () => { showStep(step + 1); autoplay(); });
 
+  // Sprawdzanie maila: YouTube działa tylko z adresem konta Google (prawie zawsze @gmail.com).
+  const GOOGLE_DOMAINS = ['gmail.com', 'googlemail.com'];
+  const GMAIL_TYPOS = /^(g?mai?l|gmial|gmali|gamil|gmaill|gnail|gmal|gmeil|gemail|googlemail|gmail)\.(com|de|pl|co|cm|con|om|comm|cmo|c|net|org)$|^gmail\.[a-z]+$/;
+  let emailState = 'empty', confirmedEmail = '';
+  function checkEmail() {
+    const box = $('echeck');
+    const v = $('email').value.trim().toLowerCase();
+    box.className = 'echeck';
+    box.replaceChildren();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { emailState = v ? 'invalid' : 'empty'; return; }
+    const [user, domain] = v.split('@');
+    if (GOOGLE_DOMAINS.includes(domain)) {
+      emailState = 'ok';
+      box.className = 'echeck ok';
+      box.textContent = t('emailOk');
+    } else if (GMAIL_TYPOS.test(domain)) {
+      emailState = 'typo';
+      const fixed = user + '@gmail.com';
+      box.className = 'echeck bad';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = t('emailFix');
+      btn.addEventListener('click', () => { $('email').value = fixed; checkEmail(); });
+      box.append(t('emailTypo').replace('{s}', fixed), document.createElement('br'), btn);
+    } else {
+      emailState = 'other';
+      box.className = 'echeck warn';
+      const lbl = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.id = 'emailConfirm';
+      cb.checked = confirmedEmail === v;
+      cb.addEventListener('change', () => { confirmedEmail = cb.checked ? v : ''; });
+      lbl.append(cb, document.createTextNode(t('emailWarnConfirm')));
+      box.append(t('emailWarn').replace('{d}', '@' + domain), lbl);
+    }
+  }
+  $('email').addEventListener('input', checkEmail);
+
   $('club').textContent = CONFIG.clubName;
   if (!CONFIG.scriptUrl) $('demo').style.display = 'block';
   render();
@@ -356,6 +418,9 @@
     };
     if (!data.firstName) return showError('errName');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return showError('errEmail');
+    checkEmail();
+    if (emailState === 'typo') return showError('errEmailTypo');
+    if (emailState === 'other' && confirmedEmail !== data.email.toLowerCase()) return showError('errEmailConfirm');
     if (!data.consent) return showError('errConsent');
 
     const btn = ev.submitter || document.querySelector('.submit');
