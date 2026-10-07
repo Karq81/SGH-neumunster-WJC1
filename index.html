@@ -29,6 +29,7 @@
   .card h2 { font-size: 17px; margin: 0 0 8px; }
   .card p, .card li { color: var(--muted); margin: 0 0 8px; }
   .card ul { padding-left: 20px; margin: 0; }
+  .card p.ask { color: var(--text); font-weight: 600; margin: 12px 0 0; }
   label { display: block; font-weight: 600; margin: 14px 0 4px; }
   .hint { font-weight: 400; color: var(--muted); font-size: 14px; }
   input[type=text], input[type=email] {
@@ -76,13 +77,25 @@
     </ul>
   </section>
 
+  <section class="card">
+    <h2 data-t="privTitle"></h2>
+    <p data-t="priv1"></p>
+    <ul>
+      <li data-t="p1"></li>
+      <li data-t="p2"></li>
+      <li data-t="p3"></li>
+      <li data-t="p4"></li>
+    </ul>
+    <p class="ask" data-t="privAsk"></p>
+  </section>
+
   <section class="card" id="formCard">
     <form id="form" novalidate>
       <label for="firstName" data-t="firstName"></label>
       <input type="text" id="firstName" autocomplete="given-name" required maxlength="60">
 
-      <label for="lastName" data-t="lastName"></label>
-      <input type="text" id="lastName" autocomplete="family-name" required maxlength="60">
+      <label for="lastName"><span data-t="lastName"></span> <span class="hint" data-t="optional"></span></label>
+      <input type="text" id="lastName" autocomplete="family-name" maxlength="60">
 
       <label for="email"><span data-t="email"></span><br><span class="hint" data-t="emailHint"></span></label>
       <input type="email" id="email" autocomplete="email" inputmode="email" required maxlength="120" placeholder="name@gmail.com">
@@ -125,6 +138,13 @@
       b1: 'Sie müssen sich hier nirgendwo anmelden und kein Passwort eingeben.',
       b2: 'Zum Anschauen müssen Sie in YouTube mit genau diesem Konto angemeldet sein.',
       b3: 'Die Daten nutzen wir nur dafür und geben sie nicht weiter. Löschung jederzeit auf Wunsch beim Trainer.',
+      privTitle: 'Warum nur privat?',
+      priv1: 'Auf den Videos sind unsere Spielerinnen zu sehen – Kinder und Jugendliche. Ihre Bilder gehören ihnen und ihren Familien, nicht dem Internet. Deshalb sollen die Videos nur im Kreis von Mannschaft, Eltern und Trainern bleiben.',
+      p1: 'Schutz der Kinder: Öffentliche Videos können von Fremden gefunden, kopiert, geschnitten und in anderen Zusammenhängen weiterverbreitet werden. Was einmal im Netz ist, lässt sich kaum wieder löschen.',
+      p2: 'Recht am eigenen Bild und Datenschutz (DSGVO): Nicht alle Familien möchten, dass ihr Kind öffentlich zu sehen ist – auch Spielerinnen der Gegner und Schiedsrichter sind auf den Aufnahmen.',
+      p3: 'Kein Druck und kein Spott: Fehler gehören zum Sport. Szenen aus einem Jugendspiel sollen nicht in sozialen Netzwerken landen, kommentiert oder bloßgestellt werden.',
+      p4: 'Die Videos sind für uns: zum Anschauen für Familien, die nicht in der Halle sein können, zur Erinnerung und zur Spielanalyse im Training.',
+      privAsk: 'Unsere Bitte: Links zu den Videos nicht weiterleiten, Videos nicht herunterladen und keine Bildschirmaufnahmen oder Screenshots in sozialen Netzwerken oder Gruppen teilen. Wer zusätzlich Zugang braucht (z. B. Großeltern), meldet sich einfach selbst hier an.',
       firstName: 'Vorname',
       lastName: 'Nachname',
       email: 'E-Mail-Adresse Ihres YouTube-/Google-Kontos',
@@ -136,7 +156,7 @@
       sending: 'Wird gesendet…',
       thanks: 'Danke! Sie sind eingetragen.',
       thanks2: 'Sobald wir ein Video oder einen Livestream freigeben, bekommen Sie Zugriff mit Ihrem YouTube-Konto.',
-      errName: 'Bitte Vor- und Nachnamen eingeben.',
+      errName: 'Bitte Vornamen eingeben.',
       errEmail: 'Bitte eine gültige E-Mail-Adresse eingeben.',
       errConsent: 'Bitte die Einwilligung bestätigen.',
       errServer: 'Das hat leider nicht geklappt. Bitte später erneut versuchen.',
@@ -150,6 +170,13 @@
       b1: 'Nie musisz się tu nigdzie logować ani wpisywać hasła.',
       b2: 'Żeby oglądać, musisz być zalogowany w YouTube właśnie na to konto.',
       b3: 'Dane wykorzystujemy tylko w tym celu i nikomu ich nie przekazujemy. Na prośbę u trenera usuniemy je w każdej chwili.',
+      privTitle: 'Dlaczego tylko prywatnie?',
+      priv1: 'Na filmach widać nasze zawodniczki – dzieci i młodzież. Ich wizerunek należy do nich i ich rodzin, a nie do internetu. Dlatego filmy mają zostać tylko w gronie drużyny, rodziców i trenerów.',
+      p1: 'Ochrona dzieci: publiczne filmy mogą znaleźć obcy ludzie, skopiować je, przyciąć i rozpowszechniać w zupełnie innym kontekście. Tego, co raz trafi do sieci, praktycznie nie da się usunąć.',
+      p2: 'Prawo do wizerunku i ochrona danych (RODO/DSGVO): nie każda rodzina chce, żeby jej dziecko było widoczne publicznie – na nagraniach są też zawodniczki drużyny przeciwnej i sędziowie.',
+      p3: 'Bez presji i wyśmiewania: błędy są częścią sportu. Sceny z meczu młodzieżowego nie powinny trafiać do mediów społecznościowych, być komentowane ani ośmieszane.',
+      p4: 'Filmy są dla nas: dla rodzin, które nie mogą być na hali, na pamiątkę i do analizy gry na treningu.',
+      privAsk: 'Nasza prośba: nie przesyłaj dalej linków do filmów, nie pobieraj filmów i nie udostępniaj nagrań ekranu ani zrzutów w mediach społecznościowych czy grupach. Jeśli ktoś jeszcze chce mieć dostęp (np. dziadkowie), niech sam zapisze się na tej stronie.',
       firstName: 'Imię',
       lastName: 'Nazwisko',
       email: 'Adres e-mail konta YouTube/Google',
@@ -161,7 +188,7 @@
       sending: 'Wysyłanie…',
       thanks: 'Dziękujemy! Jesteś na liście.',
       thanks2: 'Gdy udostępnimy film lub transmisję, zobaczysz je po zalogowaniu na swoje konto YouTube.',
-      errName: 'Podaj imię i nazwisko.',
+      errName: 'Podaj imię.',
       errEmail: 'Podaj poprawny adres e-mail.',
       errConsent: 'Zaznacz zgodę.',
       errServer: 'Niestety coś poszło nie tak. Spróbuj ponownie później.',
@@ -208,7 +235,7 @@
       consent: $('consent').checked,
       website: $('website').value,
     };
-    if (!data.firstName || !data.lastName) return showError('errName');
+    if (!data.firstName) return showError('errName');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return showError('errEmail');
     if (!data.consent) return showError('errConsent');
 
