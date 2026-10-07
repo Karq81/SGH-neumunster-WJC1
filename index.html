@@ -117,6 +117,30 @@
   .acc { display: flex; gap: 8px; align-items: center; padding: 12px; }
   .acc .mail { display: inline-block; margin-top: 3px; font-size: 10px; color: #0f0f0f; font-weight: 700; background: #fff3a3; padding: 2px 4px; border-radius: 4px; }
   .acc small { color: #606060; display: block; }
+  .ic { font-size: 12px; margin-left: 6px; }
+  .ic.ring::before { inset: -5px; }
+  .chips { display: flex; gap: 5px; padding: 6px 10px 0; font-size: 10px; }
+  .chips b, .chips span { padding: 3px 7px; border-radius: 6px; background: #eee; }
+  .chips b { background: #0f0f0f; color: #fff; }
+  .pill { font-size: 10px; border: 1px solid #ccc; border-radius: 999px; padding: 2px 8px; }
+  .btnrow { padding: 0 12px; }
+  .btnrow .dark { display: inline-block; background: #0f0f0f; color: #fff; border-radius: 999px; padding: 4px 14px; font-size: 11px; font-weight: 600; }
+  .sect { padding: 12px 12px 4px; font-weight: 700; font-size: 13px; }
+  .thumbs { display: flex; gap: 6px; padding: 0 12px; }
+  .thumbs i { flex: 1; height: 44px; border-radius: 6px; background: #e6e6e6; }
+  .set-h { padding: 12px; font-size: 14px; font-weight: 600; }
+  .set-sub { padding: 6px 12px; font-weight: 700; font-size: 12px; }
+  .set-row { padding: 9px 12px; font-size: 12px; }
+  .set-row.hl { margin: 0 6px; border-radius: 8px; background: #fff3a3; font-weight: 700; }
+  .set-row.ring::before { inset: -2px; border-radius: 10px; }
+  .scr.dim { background: rgba(0,0,0,.45); }
+  .dlg { position: absolute; left: 14px; right: 14px; top: 44px; background: #fff; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+  .dlg-h { display: flex; justify-content: space-between; padding: 12px 12px 6px; font-size: 13px; font-weight: 600; }
+  .dlg-top { padding: 4px 12px 10px; font-size: 11px; border-bottom: 1px solid #eee; line-height: 1.6; }
+  .dlg-top .mail { position: relative; display: inline-block; background: #fff3a3; font-weight: 700; padding: 1px 4px; border-radius: 4px; }
+  .dlg-top .mail.ring::before { inset: -4px; border-radius: 8px; }
+  .tick { margin-left: auto; color: #065fd4; font-weight: 700; }
+  .dlg-l { padding: 10px 12px 12px; font-size: 11px; border-top: 1px solid #eee; color: #333; }
   .howto .stepcap { color: var(--text); text-align: center; margin: 16px 0 10px; font-size: 19px; font-weight: 700; line-height: 1.4; min-height: 80px; }
   .stepnav { display: flex; justify-content: center; align-items: center; gap: 10px; }
   .stepnav button { border: 2px solid var(--border); background: var(--card); color: var(--text); border-radius: 8px; padding: 8px 20px; font-size: 20px; cursor: pointer; }
@@ -198,27 +222,48 @@
       <button type="button" class="howto-btn" id="howtoBtn" aria-expanded="false"><span class="ico">📱</span><span data-t="howtoBtn"></span><span class="arrow">›</span></button>
       <div class="howto" id="howto">
         <div class="phone" aria-hidden="true">
+          <!-- 1: Startseite -> Mein YouTube -->
           <div class="scr on">
-            <div class="yt-top"><div class="yt-logo"></div><span class="yt-word">YouTube</span><span class="yt-sp"></span><div class="av ring">M</div></div>
+            <div class="yt-top"><div class="yt-logo"></div><span class="yt-word">YouTube</span><span class="yt-sp"></span><span class="ic">💬</span><span class="ic">🔔</span><span class="ic">🔍</span></div>
+            <div class="chips"><b>Alle</b><span>Gaming</span><span>News</span></div>
             <div class="vid"></div><div class="vtxt"></div><div class="vid"></div><div class="vtxt"></div>
-            <div class="navbar"><span>⌂<em>Home</em></span><span>▶<em>Shorts</em></span><span>＋</span><span>▤<em>Abos</em></span><span class="ring"><b class="av" style="width:16px;height:16px;font-size:9px">M</b><em data-t="you"></em></span></div>
-            <div class="finger" style="right:6px;bottom:2px">👆</div>
+            <div class="navbar"><span>⌂<em data-t="navHome"></em></span><span>▶<em>Shorts</em></span><span>＋</span><span>▤<em data-t="navSubs"></em></span><span class="ring"><b class="av" style="width:18px;height:18px;font-size:10px">M</b><em data-t="you"></em></span></div>
+            <div class="finger" style="right:4px;bottom:0">👆</div>
           </div>
+          <!-- 2: Profil -> Zahnrad -->
           <div class="scr">
-            <div class="prof"><div class="av big">M</div><div><b>Max Mustermann</b><small>@maxmustermann</small><br><span class="switch ring" data-t="switchAcc"></span></div></div>
-            <div class="menu-line"></div><div class="menu-line" style="width:60%"></div><div class="menu-line" style="width:75%"></div>
-            <div class="finger" style="left:96px;top:72px">👆</div>
+            <div class="yt-top"><span class="pill">Konten ⌄</span><span class="yt-sp"></span><span class="ic">🔔</span><span class="ic">🔍</span><span class="ic ring">⚙️</span></div>
+            <div class="prof"><div class="av big">M</div><div><b>Max Mustermann</b><small>@maxmuster</small></div></div>
+            <div class="btnrow"><span class="dark" data-t="toChannel"></span></div>
+            <div class="sect" data-t="history"></div>
+            <div class="thumbs"><i></i><i></i><i></i></div>
+            <div class="finger" style="right:2px;top:26px">👆</div>
           </div>
+          <!-- 3: Einstellungen -> Konto wechseln oder verwalten -->
           <div class="scr">
-            <div class="acc-h" data-t="accounts"></div>
-            <div class="acc"><div class="av">M</div><div style="min-width:0"><b>Max Mustermann</b><br><span class="mail">max.mustermann@gmail.com</span></div></div>
-            <div class="menu-line" style="margin-top:14px"></div><div class="menu-line" style="width:55%"></div>
+            <div class="set-h">← <span data-t="settings"></span></div>
+            <div class="set-sub" data-t="account"></div>
+            <div class="set-row">⚙️ <span data-t="general"></span></div>
+            <div class="set-row ring hl">👤 <span data-t="switchAcc"></span></div>
+            <div class="set-row">👪 <span data-t="family"></span></div>
+            <div class="set-row">🔤 <span data-t="languages"></span></div>
+            <div class="set-row">📊 <span data-t="timeMgmt"></span></div>
+            <div class="finger" style="left:150px;top:128px">👆</div>
+          </div>
+          <!-- 4: Konten-Fenster mit E-Mail -->
+          <div class="scr dim">
+            <div class="dlg">
+              <div class="dlg-h"><span data-t="accounts"></span><span>＋</span></div>
+              <div class="dlg-top"><span>Max Mustermann</span><br><span class="mail ring">max.mustermann@gmail.com</span></div>
+              <div class="acc"><div class="av">M</div><div style="min-width:0"><b>Max Mustermann</b><br><small>@maxmuster</small></div><span class="tick">✓</span></div>
+              <div class="dlg-l" data-t="manageGoogle"></div>
+            </div>
           </div>
         </div>
         <p class="stepcap" id="stepcap"></p>
         <div class="stepnav">
           <button type="button" id="prevStep">‹</button>
-          <div class="dots"><i class="on"></i><i></i><i></i></div>
+          <div class="dots"><i class="on"></i><i></i><i></i><i></i></div>
           <button type="button" id="nextStep">›</button>
         </div>
         <p class="extra" data-t="howtoPc"></p>
@@ -314,12 +359,24 @@
       playerNote: 'Super! Trag einfach deinen Namen und die E-Mail deines eigenen YouTube-Kontos ein. Wenn du unter 16 bist, frag bitte vorher kurz deine Eltern.',
       errRole: 'Bitte oben auswählen: Mama/Papa, Spielerin oder Familie/Fan.',
       howtoBtn: 'Welche E-Mail hat mein YouTube-Konto? Hier tippen – Anleitung',
-      you: 'Du',
-      switchAcc: 'Konto wechseln',
+      you: 'Mein YouTube',
+      navHome: 'Start',
+      navSubs: 'Abos',
+      toChannel: 'Zum Kanal',
+      history: 'Verlauf',
+      settings: 'Einstellungen',
+      account: 'Konto',
+      general: 'Allgemein',
+      switchAcc: 'Konto wechseln oder verwalten',
+      family: 'Familiencenter',
+      languages: 'Sprachen',
+      timeMgmt: 'Zeitmanagement',
       accounts: 'Konten',
-      step1: '1. YouTube-App öffnen und unten rechts auf „Du“ bzw. oben rechts auf Ihr Profilbild tippen.',
-      step2: '2. Unter Ihrem Namen auf „Konto wechseln“ tippen.',
-      step3: '3. Die E-Mail-Adresse unter Ihrem Namen ist die richtige – genau diese bitte eintragen.',
+      manageGoogle: 'Google-Konto verwalten',
+      step1: '1. YouTube-App öffnen und unten rechts auf „Mein YouTube“ (Ihr Profilbild) tippen.',
+      step2: '2. Oben rechts auf das Zahnrad ⚙️ (Einstellungen) tippen.',
+      step3: '3. Auf „Konto wechseln oder verwalten“ tippen.',
+      step4: '4. Ganz oben unter Ihrem Namen steht Ihre E-Mail-Adresse – genau diese hier eintragen.',
       howtoPc: 'Am Computer: auf youtube.com oben rechts auf das Profilbild klicken → „Konto wechseln“ – dort steht die E-Mail-Adresse.',
       optional: '(optional)',
       consent: 'Ich bin einverstanden, dass meine Angaben gespeichert und nur zur Freigabe der privaten Mannschaftsvideos verwendet werden.',
@@ -386,11 +443,23 @@
       errRole: 'Wybierz u góry: rodzic, zawodniczka albo rodzina/kibic.',
       howtoBtn: 'Jaki e-mail ma moje konto YouTube? Stuknij tutaj – instrukcja',
       you: 'Ty',
-      switchAcc: 'Przełącz konto',
+      navHome: 'Główna',
+      navSubs: 'Subskrypcje',
+      toChannel: 'Przejdź do kanału',
+      history: 'Historia',
+      settings: 'Ustawienia',
+      account: 'Konto',
+      general: 'Ogólne',
+      switchAcc: 'Przełącz konto lub nim zarządzaj',
+      family: 'Centrum rodzinne',
+      languages: 'Języki',
+      timeMgmt: 'Zarządzanie czasem',
       accounts: 'Konta',
-      step1: '1. Otwórz aplikację YouTube i stuknij „Ty” na dole po prawej albo swoje zdjęcie profilowe u góry po prawej.',
-      step2: '2. Pod swoją nazwą stuknij „Przełącz konto”.',
-      step3: '3. Adres e-mail pod Twoją nazwą jest właściwy – wpisz dokładnie ten.',
+      manageGoogle: 'Zarządzaj kontem Google',
+      step1: '1. Otwórz aplikację YouTube i stuknij na dole po prawej „Ty” (po niem. „Mein YouTube”, Twoje zdjęcie profilowe).',
+      step2: '2. U góry po prawej stuknij zębatkę ⚙️ (Ustawienia).',
+      step3: '3. Stuknij „Przełącz konto lub nim zarządzaj” (po niem. „Konto wechseln oder verwalten”).',
+      step4: '4. Na samej górze pod Twoim imieniem jest Twój adres e-mail – wpisz dokładnie ten.',
       howtoPc: 'Na komputerze: na youtube.com kliknij zdjęcie profilowe w prawym górnym rogu → „Przełącz konto” – tam widać adres e-mail.',
       optional: '(opcjonalnie)',
       consent: 'Zgadzam się na zapisanie moich danych i wykorzystanie ich wyłącznie do udostępniania prywatnych filmów drużyny.',
