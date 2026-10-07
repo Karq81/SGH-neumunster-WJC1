@@ -39,7 +39,8 @@
 
   <div class="card">
     <form id="login" class="row">
-      <input type="password" id="key" placeholder="Hasło trenera" autocomplete="current-password">
+      <input type="password" id="key" placeholder="Hasło trenera" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <button type="button" class="sec" id="showKey">👁</button>
       <button type="submit">Pokaż listę</button>
     </form>
     <p class="muted" id="status"></p>
@@ -85,7 +86,7 @@
       const data = await res.json();
       if (!data.ok) {
         $('result').style.display = 'none';
-        return status(data.error === 'unauthorized' ? 'Złe hasło.' : 'Błąd serwera.', 'err');
+        return status(data.error === 'unauthorized' ? 'Złe hasło. Stuknij 👁, żeby sprawdzić, co jest wpisane (wielkość liter, spacje).' : 'Błąd serwera.', 'err');
       }
       try { localStorage.setItem('adminKey', key); } catch (e) {}
       $('count').textContent = 'Osób na liście: ' + data.count;
@@ -126,6 +127,10 @@
       status('Nie udało się połączyć z Arkuszem Google.', 'err');
     }
   }
+
+  $('showKey').addEventListener('click', () => {
+    $('key').type = $('key').type === 'password' ? 'text' : 'password';
+  });
 
   $('login').addEventListener('submit', ev => { ev.preventDefault(); load(); });
   $('refresh').addEventListener('click', load);
