@@ -96,7 +96,7 @@
         row.className = 'person';
         const info = document.createElement('div');
         info.className = 'info';
-        const meta = [p.child && 'dziecko: ' + p.child, p.date && new Date(p.date).toLocaleDateString('pl-PL')].filter(Boolean).join(' · ');
+        const meta = [p.child, p.date && new Date(p.date).toLocaleDateString('pl-PL')].filter(Boolean).join(' · ');
         info.append(el('div', '', (p.firstName + ' ' + p.lastName).trim()), el('div', 'mail', p.email), el('div', 'meta', meta));
         const del = el('button', 'del', 'Usuń');
         del.type = 'button';

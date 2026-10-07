@@ -50,6 +50,13 @@
   .echeck button { margin-top: 8px; padding: 6px 12px; border: 0; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
   .echeck label { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0 0; font-weight: 600; }
   .echeck label input { margin-top: 3px; width: 18px; height: 18px; flex: none; }
+  .roles { display: grid; gap: 8px; margin-top: 6px; }
+  .role { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 2px solid var(--border);
+          border-radius: 10px; background: var(--bg); cursor: pointer; font-weight: 600; margin: 0; }
+  .role input { width: 20px; height: 20px; flex: none; accent-color: var(--accent); }
+  .role .ico { font-size: 24px; }
+  .role:has(input:checked) { border-color: var(--accent); background: rgba(214,40,57,.08); }
+  .role-note { margin: 8px 0 0; font-size: 14px; color: var(--muted); display: none; }
   .msg { margin-top: 14px; padding: 12px; border-radius: 8px; display: none; }
   .msg.err { display: block; background: rgba(192,57,43,.1); color: var(--err); }
   .done { text-align: center; display: none; }
@@ -95,7 +102,6 @@
   .acc { display: flex; gap: 8px; align-items: center; padding: 12px; }
   .acc .mail { display: inline-block; margin-top: 3px; font-size: 10px; color: #0f0f0f; font-weight: 700; background: #fff3a3; padding: 2px 4px; border-radius: 4px; }
   .acc small { color: #606060; display: block; }
-  .check { margin-left: auto; color: #1f8a4c; font-weight: 700; }
   .howto .stepcap { color: var(--text); text-align: center; margin: 16px 0 10px; font-size: 19px; font-weight: 700; line-height: 1.4; min-height: 80px; }
   .stepnav { display: flex; justify-content: center; align-items: center; gap: 10px; }
   .stepnav button { border: 2px solid var(--border); background: var(--card); color: var(--text); border-radius: 8px; padding: 8px 20px; font-size: 20px; cursor: pointer; }
@@ -151,6 +157,14 @@
 
   <section class="card" id="formCard">
     <form id="form" novalidate>
+      <label data-t="roleQ" style="margin-top:0"></label>
+      <div class="roles" role="radiogroup">
+        <label class="role"><input type="radio" name="role" value="parent"><span class="ico">👨‍👩‍👧</span><span data-t="roleParent"></span></label>
+        <label class="role"><input type="radio" name="role" value="player"><span class="ico">🤾‍♀️</span><span data-t="rolePlayer"></span></label>
+        <label class="role"><input type="radio" name="role" value="fan"><span class="ico">📣</span><span data-t="roleFan"></span></label>
+      </div>
+      <p class="role-note" id="playerNote" data-t="playerNote"></p>
+
       <label for="firstName" data-t="firstName"></label>
       <input type="text" id="firstName" autocomplete="given-name" required maxlength="60">
 
@@ -190,8 +204,10 @@
         <p class="extra" data-t="howtoPc"></p>
       </div>
 
-      <label for="child"><span data-t="child"></span> <span class="hint" data-t="optional"></span></label>
-      <input type="text" id="child" maxlength="120">
+      <div id="childWrap">
+        <label for="child"><span data-t="child"></span> <span class="hint" data-t="optional"></span></label>
+        <input type="text" id="child" maxlength="120">
+      </div>
 
       <input type="text" id="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 
@@ -242,7 +258,13 @@
       lastName: 'Nachname',
       email: 'E-Mail-Adresse Ihres YouTube-/Google-Kontos',
       emailHint: 'Meist Ihre Gmail-Adresse – die, mit der Sie in YouTube angemeldet sind.',
-      child: 'Name Ihres Kindes',
+      child: 'Name der Spielerin (Ihr Kind / Enkelkind)',
+      roleQ: 'Wer sind Sie?',
+      roleParent: 'Elternteil',
+      rolePlayer: 'Spielerin (ich spiele selbst in der Mannschaft)',
+      roleFan: 'Familie / Fan (z. B. Oma, Opa, Tante)',
+      playerNote: 'Super! Trag einfach deinen Namen und die E-Mail deines eigenen YouTube-Kontos ein. Wenn du unter 16 bist, frag bitte vorher kurz deine Eltern.',
+      errRole: 'Bitte oben auswählen: Elternteil, Spielerin oder Familie/Fan.',
       howtoBtn: 'Welche E-Mail hat mein YouTube-Konto? Hier tippen – Anleitung',
       you: 'Du',
       switchAcc: 'Konto wechseln',
@@ -292,7 +314,13 @@
       lastName: 'Nazwisko',
       email: 'Adres e-mail konta YouTube/Google',
       emailHint: 'Zwykle Twój adres Gmail – ten, na który logujesz się w YouTube.',
-      child: 'Imię dziecka',
+      child: 'Imię zawodniczki (Twoje dziecko / wnuczka)',
+      roleQ: 'Kim jesteś?',
+      roleParent: 'Rodzic',
+      rolePlayer: 'Zawodniczka (sama gram w drużynie)',
+      roleFan: 'Rodzina / kibic (np. babcia, dziadek, ciocia)',
+      playerNote: 'Super! Wpisz po prostu swoje imię i e-mail swojego własnego konta YouTube. Jeśli masz mniej niż 16 lat, zapytaj wcześniej rodziców.',
+      errRole: 'Wybierz u góry: rodzic, zawodniczka albo rodzina/kibic.',
       howtoBtn: 'Jaki e-mail ma moje konto YouTube? Stuknij tutaj – instrukcja',
       you: 'Ty',
       switchAcc: 'Przełącz konto',
@@ -400,6 +428,15 @@
   }
   $('email').addEventListener('input', checkEmail);
 
+  // Rola: zawodniczka nie podaje imienia dziecka
+  const ROLE_TAG = { parent: '[Rodzic]', player: '[Zawodniczka]', fan: '[Kibic]' };
+  function currentRole() { const r = document.querySelector('input[name=role]:checked'); return r ? r.value : ''; }
+  document.querySelectorAll('input[name=role]').forEach(r => r.addEventListener('change', () => {
+    const player = currentRole() === 'player';
+    $('childWrap').style.display = player ? 'none' : '';
+    $('playerNote').style.display = player ? 'block' : 'none';
+  }));
+
   $('club').textContent = CONFIG.clubName;
   if (!CONFIG.scriptUrl) $('demo').style.display = 'block';
   render();
@@ -417,10 +454,14 @@
       firstName: $('firstName').value.trim(),
       lastName: $('lastName').value.trim(),
       email: $('email').value.trim(),
-      child: $('child').value.trim(),
+      child: '',
       consent: $('consent').checked,
       website: $('website').value,
     };
+    const role = currentRole();
+    if (!role) return showError('errRole');
+    const childName = role === 'player' ? '' : $('child').value.trim();
+    data.child = (ROLE_TAG[role] + ' ' + childName).trim();
     if (!data.firstName) return showError('errName');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return showError('errEmail');
     checkEmail();
