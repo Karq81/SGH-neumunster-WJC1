@@ -21,10 +21,15 @@
   .err { color: var(--err); }
   .ok { color: var(--ok); }
   textarea { width: 100%; min-height: 90px; padding: 10px; font: 14px/1.4 ui-monospace, monospace; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
-  .tablewrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
   th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
   th { color: var(--muted); font-weight: 600; }
+  .person { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .person:last-child { border-bottom: 0; }
+  .person .info { flex: 1; min-width: 0; font-size: 14px; }
+  .person .mail { font-weight: 600; word-break: break-all; }
+  .person .meta { color: var(--muted); font-size: 13px; }
+  button.del { padding: 4px 10px; font-size: 13px; background: transparent; color: var(--err); border: 1px solid var(--err); }
   #result { display: none; }
 </style>
 </head>
@@ -53,12 +58,7 @@
         Osoby z „NIE” w kolumnie „Aktywny” w arkuszu są pomijane.</p>
       <textarea id="emails" readonly></textarea>
     </div>
-    <div class="card tablewrap">
-      <table>
-        <thead><tr><th>Imię</th><th>Nazwisko</th><th>E-mail</th><th>Dziecko / drużyna</th><th>Data</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
+    <div class="card" id="rows"></div>
   </div>
 </div>
 
@@ -73,7 +73,7 @@
 
   function status(text, cls) { $('status').textContent = text; $('status').className = 'muted ' + (cls || ''); }
 
-  function cell(text) { const td = document.createElement('td'); td.textContent = text; return td; }
+  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = text; return e; }
 
   async function load() {
     const key = $('key').value.trim();
@@ -90,15 +90,38 @@
       try { localStorage.setItem('adminKey', key); } catch (e) {}
       $('count').textContent = 'Osób na liście: ' + data.count;
       $('emails').value = data.emails.join(', ');
-      const tbody = $('rows');
-      tbody.replaceChildren(...data.people.map(p => {
-        const tr = document.createElement('tr');
-        tr.append(cell(p.firstName), cell(p.lastName), cell(p.email), cell(p.child),
-                  cell(p.date ? new Date(p.date).toLocaleDateString('pl-PL') : ''));
-        return tr;
+      $('rows').replaceChildren(...data.people.map(p => {
+        const row = document.createElement('div');
+        row.className = 'person';
+        const info = document.createElement('div');
+        info.className = 'info';
+        const meta = [p.child && 'dziecko: ' + p.child, p.date && new Date(p.date).toLocaleDateString('pl-PL')].filter(Boolean).join(' · ');
+        info.append(el('div', '', (p.firstName + ' ' + p.lastName).trim()), el('div', 'mail', p.email), el('div', 'meta', meta));
+        const del = el('button', 'del', 'Usuń');
+        del.type = 'button';
+        del.addEventListener('click', () => removePerson(p));
+        row.append(info, del);
+        return row;
       }));
       $('result').style.display = 'block';
       status('Zaktualizowano ' + new Date().toLocaleTimeString('pl-PL'), 'ok');
+    } catch (e) {
+      status('Nie udało się połączyć z Arkuszem Google.', 'err');
+    }
+  }
+
+  async function removePerson(p) {
+    const name = (p.firstName + ' ' + p.lastName).trim();
+    if (!confirm('Usunąć z listy?\n\n' + name + '\n' + p.email + '\n\nOsoba może potem zapisać się ponownie z poprawnym mailem.')) return;
+    status('Usuwanie…');
+    try {
+      const res = await fetch(SCRIPT_URL, { method: 'POST',
+        body: JSON.stringify({ action: 'delete', key: $('key').value.trim(), email: p.email }) });
+      const out = await res.json();
+      if (out.ok) { await load(); return status('Usunięto: ' + p.email, 'ok'); }
+      const msg = { unauthorized: 'Złe hasło.', notfound: 'Tej osoby już nie ma na liście.',
+                    name: 'Skrypt w Google jest w starej wersji – wklej nowy skrypt i zrób Wdróż → Nowa wersja.' };
+      status(msg[out.error] || 'Błąd serwera.', 'err');
     } catch (e) {
       status('Nie udało się połączyć z Arkuszem Google.', 'err');
     }
