@@ -65,6 +65,13 @@
   .role .ico { font-size: 24px; }
   .role:has(input:checked) { border-color: var(--accent); background: rgba(214,40,57,.08); }
   .role-note { margin: 8px 0 0; font-size: 14px; color: var(--muted); display: none; }
+  .contact { margin: 12px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
+  .card .contact p { margin: 0; color: var(--text); }
+  .contact a, .privacy a { color: var(--accent); font-weight: 600; word-break: break-all; }
+  .privacy { font-size: 14px; }
+  .privacy summary { cursor: pointer; font-weight: 700; font-size: 16px; }
+  .privacy h3 { font-size: 15px; margin: 14px 0 4px; }
+  .privacy p { margin: 0 0 6px; }
   .msg { margin-top: 14px; padding: 12px; border-radius: 8px; display: none; }
   .msg.err { display: block; background: rgba(192,57,43,.1); color: var(--err); }
   .done { text-align: center; display: none; }
@@ -149,6 +156,11 @@
     <h2 data-t="whoTitle"></h2>
     <p data-t="who1"></p>
     <p data-t="who2"></p>
+    <div class="contact">
+      <p><strong>Michał Karczewski</strong></p>
+      <p><a href="mailto:karczek1981@gmail.com">karczek1981@gmail.com</a></p>
+      <p data-t="contactNote" style="margin-top:6px;color:var(--muted)"></p>
+    </div>
   </section>
 
   <section class="card">
@@ -219,6 +231,7 @@
 
       <input type="text" id="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 
+      <label class="check" id="parentWrap" style="display:none"><input type="checkbox" id="parentOk"><span data-t="parentOk"></span></label>
       <label class="check"><input type="checkbox" id="consent"><span data-t="consent"></span></label>
 
       <button class="submit" type="submit" data-t="send"></button>
@@ -230,6 +243,18 @@
       <h2 data-t="thanks"></h2>
       <p data-t="thanks2"></p>
     </div>
+  </section>
+
+  <section class="card privacy">
+    <details>
+      <summary data-t="privHead"></summary>
+      <h3 data-t="pv1h"></h3><p>Michał Karczewski · <a href="mailto:karczek1981@gmail.com">karczek1981@gmail.com</a></p>
+      <h3 data-t="pv2h"></h3><p data-t="pv2"></p>
+      <h3 data-t="pv3h"></h3><p data-t="pv3"></p>
+      <h3 data-t="pv4h"></h3><p data-t="pv4"></p>
+      <h3 data-t="pv5h"></h3><p data-t="pv5"></p>
+      <h3 data-t="pv6h"></h3><p data-t="pv6"></p>
+    </details>
   </section>
 </div>
 
@@ -267,6 +292,21 @@
       email: 'E-Mail-Adresse Ihres YouTube-/Google-Kontos',
       emailHint: 'Meist Ihre Gmail-Adresse – die, mit der Sie in YouTube angemeldet sind.',
       child: 'Name der Spielerin (Ihr Kind / Enkelkind)',
+      contactNote: 'Fragen, Wünsche oder Löschung Ihrer Daten? Einfach eine E-Mail an mich schreiben – oder direkt den Trainer ansprechen.',
+      parentOk: 'Ich bin 16 oder älter – oder meine Eltern sind einverstanden, dass ich mich hier eintrage.',
+      errParent: 'Bitte bestätigen: 16 oder älter bzw. Einverständnis der Eltern.',
+      privHead: 'Datenschutz – kurz erklärt',
+      pv1h: 'Verantwortlich',
+      pv2h: 'Welche Daten und wofür?',
+      pv2: 'Vorname, optional Nachname, E-Mail-Adresse des YouTube-/Google-Kontos, optional Name der Spielerin sowie die Angabe Eltern/Spielerin/Familie. Einziger Zweck: Freigabe der privaten Mannschaftsvideos auf YouTube. Grundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Keine Weitergabe an Dritte, keine Werbung.',
+      pv3h: 'Wo werden die Daten gespeichert?',
+      pv3: 'In einer privaten Google-Tabelle (Google). Diese Seite liegt bei GitHub; dabei kann technisch Ihre IP-Adresse verarbeitet werden. Beide Anbieter sitzen in den USA. Bei der Freigabe eines Videos wird die E-Mail-Adresse in YouTube eingetragen.',
+      pv4h: 'Wie lange?',
+      pv4: 'Solange Videos der Mannschaft geteilt werden bzw. bis Sie Ihre Einwilligung widerrufen – dann werden die Daten gelöscht.',
+      pv5h: 'Ihre Rechte',
+      pv5: 'Auskunft, Berichtigung, Löschung und Widerruf der Einwilligung jederzeit per E-Mail an die oben genannte Adresse. Sie können sich außerdem bei der Datenschutz-Aufsichtsbehörde beschweren (Unabhängiges Landeszentrum für Datenschutz Schleswig-Holstein).',
+      pv6h: 'Cookies und Tracking',
+      pv6: 'Keine. Nur die gewählte Sprache wird lokal in Ihrem Browser gespeichert.',
       roleQ: 'Wer sind Sie?',
       roleParent: 'Mama / Papa',
       rolePlayer: 'Spielerin (ich spiele selbst in der Mannschaft)',
@@ -323,6 +363,21 @@
       email: 'Adres e-mail konta YouTube/Google',
       emailHint: 'Zwykle Twój adres Gmail – ten, na który logujesz się w YouTube.',
       child: 'Imię zawodniczki (Twoje dziecko / wnuczka)',
+      contactNote: 'Pytania, prośby albo usunięcie danych? Napisz do mnie maila – albo porozmawiaj bezpośrednio z trenerem.',
+      parentOk: 'Mam 16 lat lub więcej – albo moi rodzice zgadzają się, żebym się tu zapisała.',
+      errParent: 'Potwierdź: 16 lat lub więcej albo zgoda rodziców.',
+      privHead: 'Ochrona danych – w skrócie',
+      pv1h: 'Kto odpowiada za dane',
+      pv2h: 'Jakie dane i po co?',
+      pv2: 'Imię, opcjonalnie nazwisko, adres e-mail konta YouTube/Google, opcjonalnie imię zawodniczki oraz informacja rodzic/zawodniczka/rodzina. Jedyny cel: udostępnianie prywatnych filmów drużyny na YouTube. Podstawą jest Twoja zgoda (art. 6 ust. 1 lit. a RODO). Nie przekazujemy danych dalej, żadnych reklam.',
+      pv3h: 'Gdzie są przechowywane?',
+      pv3: 'W prywatnym arkuszu Google (Google). Ta strona jest na GitHubie – technicznie może być przetwarzany Twój adres IP. Obie firmy mają siedzibę w USA. Przy udostępnianiu filmu adres e-mail jest wpisywany w YouTube.',
+      pv4h: 'Jak długo?',
+      pv4: 'Dopóki udostępniamy filmy drużyny albo do odwołania zgody – wtedy dane zostaną usunięte.',
+      pv5h: 'Twoje prawa',
+      pv5: 'Wgląd, poprawienie, usunięcie danych i odwołanie zgody w każdej chwili – mailem na adres powyżej. Możesz też złożyć skargę do urzędu ochrony danych (Unabhängiges Landeszentrum für Datenschutz Schleswig-Holstein).',
+      pv6h: 'Ciasteczka i śledzenie',
+      pv6: 'Brak. Tylko wybrany język jest zapisywany lokalnie w Twojej przeglądarce.',
       roleQ: 'Kim jesteś?',
       roleParent: 'Rodzic (mama / tata)',
       rolePlayer: 'Zawodniczka (sama gram w drużynie)',
@@ -443,6 +498,7 @@
     const player = currentRole() === 'player';
     $('childWrap').style.display = player ? 'none' : '';
     $('playerNote').style.display = player ? 'block' : 'none';
+    $('parentWrap').style.display = player ? 'flex' : 'none';
   }));
 
   $('club').textContent = CONFIG.clubName;
@@ -475,6 +531,7 @@
     checkEmail();
     if (emailState === 'typo') return showError('errEmailTypo');
     if (emailState === 'other' && confirmedEmail !== data.email.toLowerCase()) return showError('errEmailConfirm');
+    if (role === 'player' && !$('parentOk').checked) return showError('errParent');
     if (!data.consent) return showError('errConsent');
 
     const btn = ev.submitter || document.querySelector('.submit');
