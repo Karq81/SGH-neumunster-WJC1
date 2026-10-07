@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel trenera</title>
+<style>
+  :root { --bg: #f4f6f9; --card: #fff; --text: #1b2330; --muted: #5d6878; --accent: #d62839; --border: #d9dee6; --ok: #1f8a4c; --err: #c0392b; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #11151c; --card: #1a202a; --text: #e8ecf2; --muted: #9aa5b5; --border: #2c3442; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 16px 16px 48px; }
+  h1 { font-size: 22px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  input { flex: 1; min-width: 180px; padding: 10px; font-size: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
+  button { padding: 10px 16px; font-size: 15px; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 8px; cursor: pointer; }
+  button.sec { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .muted { color: var(--muted); font-size: 14px; }
+  .err { color: var(--err); }
+  .ok { color: var(--ok); }
+  textarea { width: 100%; min-height: 90px; padding: 10px; font: 14px/1.4 ui-monospace, monospace; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
+  .tablewrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; }
+  #result { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Panel trenera – lista do YouTube</h1>
+
+  <div class="card">
+    <form id="login" class="row">
+      <input type="password" id="key" placeholder="Hasło trenera" autocomplete="current-password">
+      <button type="submit">Pokaż listę</button>
+    </form>
+    <p class="muted" id="status"></p>
+  </div>
+
+  <div id="result">
+    <div class="card">
+      <div class="row" style="justify-content: space-between; align-items: center;">
+        <strong id="count"></strong>
+        <div class="row">
+          <button type="button" id="copy">Kopiuj wszystkie maile</button>
+          <button type="button" class="sec" id="refresh">Odśwież</button>
+        </div>
+      </div>
+      <p class="muted">Wklej w YouTube Studio: film/transmisja → Widoczność → Prywatne → Udostępnij prywatnie.
+        Osoby z „NIE” w kolumnie „Aktywny” w arkuszu są pomijane.</p>
+      <textarea id="emails" readonly></textarea>
+    </div>
+    <div class="card tablewrap">
+      <table>
+        <thead><tr><th>Imię</th><th>Nazwisko</th><th>E-mail</th><th>Dziecko / drużyna</th><th>Data</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Ten sam adres /exec co w index.html.
+  const SCRIPT_URL = '';
+
+  const $ = id => document.getElementById(id);
+  let savedKey = '';
+  try { savedKey = localStorage.getItem('adminKey') || ''; } catch (e) {}
+  $('key').value = savedKey;
+
+  function status(text, cls) { $('status').textContent = text; $('status').className = 'muted ' + (cls || ''); }
+
+  function cell(text) { const td = document.createElement('td'); td.textContent = text; return td; }
+
+  async function load() {
+    const key = $('key').value.trim();
+    if (!SCRIPT_URL) return status('Strona nie jest jeszcze podłączona do Arkusza Google (brak SCRIPT_URL).', 'err');
+    if (!key) return status('Wpisz hasło.', 'err');
+    status('Ładowanie…');
+    try {
+      const res = await fetch(SCRIPT_URL + '?key=' + encodeURIComponent(key));
+      const data = await res.json();
+      if (!data.ok) {
+        $('result').style.display = 'none';
+        return status(data.error === 'unauthorized' ? 'Złe hasło.' : 'Błąd serwera.', 'err');
+      }
+      try { localStorage.setItem('adminKey', key); } catch (e) {}
+      $('count').textContent = 'Osób na liście: ' + data.count;
+      $('emails').value = data.emails.join(', ');
+      const tbody = $('rows');
+      tbody.replaceChildren(...data.people.map(p => {
+        const tr = document.createElement('tr');
+        tr.append(cell(p.firstName), cell(p.lastName), cell(p.email), cell(p.child),
+                  cell(p.date ? new Date(p.date).toLocaleDateString('pl-PL') : ''));
+        return tr;
+      }));
+      $('result').style.display = 'block';
+      status('Zaktualizowano ' + new Date().toLocaleTimeString('pl-PL'), 'ok');
+    } catch (e) {
+      status('Nie udało się połączyć z Arkuszem Google.', 'err');
+    }
+  }
+
+  $('login').addEventListener('submit', ev => { ev.preventDefault(); load(); });
+  $('refresh').addEventListener('click', load);
+  $('copy').addEventListener('click', async () => {
+    const text = $('emails').value;
+    try { await navigator.clipboard.writeText(text); }
+    catch (e) { $('emails').select(); document.execCommand('copy'); }
+    status('Skopiowano ' + (text ? text.split(', ').length : 0) + ' adresów.', 'ok');
+  });
+
+  if (savedKey) load();
+</script>
+</body>
+</html>

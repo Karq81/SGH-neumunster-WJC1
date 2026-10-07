@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SG Handball Neumünster WJC1</title>
+<style>
+  :root {
+    --bg: #f4f6f9; --card: #ffffff; --text: #1b2330; --muted: #5d6878;
+    --accent: #d62839; --accent-dark: #a91e2c; --border: #d9dee6; --ok: #1f8a4c; --err: #c0392b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #11151c; --card: #1a202a; --text: #e8ecf2; --muted: #9aa5b5; --border: #2c3442; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 16px 16px 48px; }
+  .lang { display: flex; justify-content: flex-end; gap: 6px; }
+  .lang button { border: 1px solid var(--border); background: var(--card); color: var(--muted);
+                 border-radius: 6px; padding: 4px 10px; font-size: 14px; cursor: pointer; }
+  .lang button.active { color: var(--accent); border-color: var(--accent); font-weight: 600; }
+  header { text-align: center; margin: 12px 0 20px; }
+  .logo { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; }
+  h1 { font-size: 24px; margin: 8px 0 4px; }
+  .club { color: var(--muted); margin: 0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .card h2 { font-size: 17px; margin: 0 0 8px; }
+  .card p, .card li { color: var(--muted); margin: 0 0 8px; }
+  .card ul { padding-left: 20px; margin: 0; }
+  label { display: block; font-weight: 600; margin: 14px 0 4px; }
+  .hint { font-weight: 400; color: var(--muted); font-size: 14px; }
+  input[type=text], input[type=email] {
+    width: 100%; padding: 12px; font-size: 16px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; font-weight: 400; color: var(--muted); font-size: 14px; }
+  .check input { margin-top: 3px; width: 18px; height: 18px; flex: none; }
+  .hp { position: absolute; left: -9999px; }
+  button.submit { width: 100%; margin-top: 20px; padding: 14px; font-size: 17px; font-weight: 600;
+                  color: #fff; background: var(--accent); border: 0; border-radius: 8px; cursor: pointer; }
+  button.submit:hover { background: var(--accent-dark); }
+  button.submit:disabled { opacity: .6; cursor: wait; }
+  .msg { margin-top: 14px; padding: 12px; border-radius: 8px; display: none; }
+  .msg.err { display: block; background: rgba(192,57,43,.1); color: var(--err); }
+  .done { text-align: center; display: none; }
+  .done .big { font-size: 48px; }
+  .done h2 { font-size: 20px; }
+  .demo { background: #fff3cd; color: #6b5300; border-radius: 8px; padding: 8px 12px; font-size: 14px; margin-bottom: 12px; display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="lang">
+    <button type="button" data-lang="de">DE</button>
+    <button type="button" data-lang="pl">PL</button>
+  </div>
+
+  <header>
+    <img class="logo" src="logo.jpg" alt="" width="96" height="96">
+    <h1 data-t="title"></h1>
+    <p class="club" id="club"></p>
+  </header>
+
+  <div class="demo" id="demo" data-t="demo"></div>
+
+  <section class="card">
+    <h2 data-t="whyTitle"></h2>
+    <p data-t="why1"></p>
+    <p data-t="why2"></p>
+    <ul>
+      <li data-t="b1"></li>
+      <li data-t="b2"></li>
+      <li data-t="b3"></li>
+    </ul>
+  </section>
+
+  <section class="card" id="formCard">
+    <form id="form" novalidate>
+      <label for="firstName" data-t="firstName"></label>
+      <input type="text" id="firstName" autocomplete="given-name" required maxlength="60">
+
+      <label for="lastName" data-t="lastName"></label>
+      <input type="text" id="lastName" autocomplete="family-name" required maxlength="60">
+
+      <label for="email"><span data-t="email"></span><br><span class="hint" data-t="emailHint"></span></label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" required maxlength="120" placeholder="name@gmail.com">
+
+      <label for="child"><span data-t="child"></span> <span class="hint" data-t="optional"></span></label>
+      <input type="text" id="child" maxlength="120">
+
+      <input type="text" id="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <label class="check"><input type="checkbox" id="consent"><span data-t="consent"></span></label>
+
+      <button class="submit" type="submit" data-t="send"></button>
+      <div class="msg" id="msg" role="alert"></div>
+    </form>
+
+    <div class="done" id="done">
+      <div class="big">✅</div>
+      <h2 data-t="thanks"></h2>
+      <p data-t="thanks2"></p>
+    </div>
+  </section>
+</div>
+
+<script>
+  // ===== USTAWIENIA =====
+  const CONFIG = {
+    // Adres aplikacji Apps Script (kończy się na /exec). Pusty = tryb podglądu, nic nie jest wysyłane.
+    scriptUrl: '',
+    clubName: 'SG Handball Neumünster WJC1 · 2026/27',
+  };
+  // ======================
+
+  const T = {
+    de: {
+      title: 'Spielvideos unserer Mannschaft',
+      demo: 'Vorschau – das Formular ist noch nicht verbunden, es wird nichts gespeichert.',
+      whyTitle: 'Worum geht es?',
+      why1: 'Wir filmen die Spiele und Turniere unserer Mannschaft und zeigen sie live oder als Aufzeichnung auf YouTube – aber nur privat, nicht öffentlich.',
+      why2: 'Private YouTube-Videos können nur Personen sehen, die wir per E-Mail eingeladen haben. Dafür brauchen wir die E-Mail-Adresse Ihres Google-/YouTube-Kontos.',
+      b1: 'Sie müssen sich hier nirgendwo anmelden und kein Passwort eingeben.',
+      b2: 'Zum Anschauen müssen Sie in YouTube mit genau diesem Konto angemeldet sein.',
+      b3: 'Die Daten nutzen wir nur dafür und geben sie nicht weiter. Löschung jederzeit auf Wunsch beim Trainer.',
+      firstName: 'Vorname',
+      lastName: 'Nachname',
+      email: 'E-Mail-Adresse Ihres YouTube-/Google-Kontos',
+      emailHint: 'Meist Ihre Gmail-Adresse – die, mit der Sie in YouTube angemeldet sind.',
+      child: 'Name Ihres Kindes',
+      optional: '(optional)',
+      consent: 'Ich bin einverstanden, dass meine Angaben gespeichert und nur zur Freigabe der privaten Mannschaftsvideos verwendet werden.',
+      send: 'Absenden',
+      sending: 'Wird gesendet…',
+      thanks: 'Danke! Sie sind eingetragen.',
+      thanks2: 'Sobald wir ein Video oder einen Livestream freigeben, bekommen Sie Zugriff mit Ihrem YouTube-Konto.',
+      errName: 'Bitte Vor- und Nachnamen eingeben.',
+      errEmail: 'Bitte eine gültige E-Mail-Adresse eingeben.',
+      errConsent: 'Bitte die Einwilligung bestätigen.',
+      errServer: 'Das hat leider nicht geklappt. Bitte später erneut versuchen.',
+    },
+    pl: {
+      title: 'Filmy z meczów naszej drużyny',
+      demo: 'Podgląd – formularz nie jest jeszcze podłączony, nic nie zostanie zapisane.',
+      whyTitle: 'O co chodzi?',
+      why1: 'Nagrywamy mecze i turnieje naszej drużyny i pokazujemy je na żywo lub w nagraniu na YouTube – ale tylko prywatnie, nie publicznie.',
+      why2: 'Prywatne filmy na YouTube mogą oglądać tylko osoby zaproszone przez e-mail. Dlatego potrzebujemy adresu e-mail Twojego konta Google/YouTube.',
+      b1: 'Nie musisz się tu nigdzie logować ani wpisywać hasła.',
+      b2: 'Żeby oglądać, musisz być zalogowany w YouTube właśnie na to konto.',
+      b3: 'Dane wykorzystujemy tylko w tym celu i nikomu ich nie przekazujemy. Na prośbę u trenera usuniemy je w każdej chwili.',
+      firstName: 'Imię',
+      lastName: 'Nazwisko',
+      email: 'Adres e-mail konta YouTube/Google',
+      emailHint: 'Zwykle Twój adres Gmail – ten, na który logujesz się w YouTube.',
+      child: 'Imię dziecka',
+      optional: '(opcjonalnie)',
+      consent: 'Zgadzam się na zapisanie moich danych i wykorzystanie ich wyłącznie do udostępniania prywatnych filmów drużyny.',
+      send: 'Wyślij',
+      sending: 'Wysyłanie…',
+      thanks: 'Dziękujemy! Jesteś na liście.',
+      thanks2: 'Gdy udostępnimy film lub transmisję, zobaczysz je po zalogowaniu na swoje konto YouTube.',
+      errName: 'Podaj imię i nazwisko.',
+      errEmail: 'Podaj poprawny adres e-mail.',
+      errConsent: 'Zaznacz zgodę.',
+      errServer: 'Niestety coś poszło nie tak. Spróbuj ponownie później.',
+    },
+  };
+
+  let lang = 'de';
+  try { lang = localStorage.getItem('lang') || ((navigator.language || '').startsWith('pl') ? 'pl' : 'de'); } catch (e) {}
+
+  const $ = id => document.getElementById(id);
+  const t = k => T[lang][k];
+
+  function render() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+    document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    document.title = t('title');
+  }
+
+  document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+    lang = b.dataset.lang;
+    try { localStorage.setItem('lang', lang); } catch (e) {}
+    render();
+  }));
+
+  $('club').textContent = CONFIG.clubName;
+  if (!CONFIG.scriptUrl) $('demo').style.display = 'block';
+  render();
+
+  function showError(key) {
+    const m = $('msg');
+    m.textContent = t(key);
+    m.className = 'msg err';
+  }
+
+  $('form').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    $('msg').className = 'msg';
+    const data = {
+      firstName: $('firstName').value.trim(),
+      lastName: $('lastName').value.trim(),
+      email: $('email').value.trim(),
+      child: $('child').value.trim(),
+      consent: $('consent').checked,
+      website: $('website').value,
+    };
+    if (!data.firstName || !data.lastName) return showError('errName');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return showError('errEmail');
+    if (!data.consent) return showError('errConsent');
+
+    const btn = ev.submitter || document.querySelector('.submit');
+    btn.disabled = true;
+    btn.textContent = t('sending');
+    try {
+      if (CONFIG.scriptUrl) {
+        // Zwykły tekst (bez nagłówka JSON), żeby przeglądarka nie robiła zapytania wstępnego CORS do Google.
+        const res = await fetch(CONFIG.scriptUrl, { method: 'POST', body: JSON.stringify(data) });
+        const out = await res.json();
+        if (!out.ok) {
+          const map = { name: 'errName', email: 'errEmail', consent: 'errConsent' };
+          throw new Error(map[out.error] || 'errServer');
+        }
+      } else {
+        await new Promise(r => setTimeout(r, 600));
+      }
+      $('form').style.display = 'none';
+      $('done').style.display = 'block';
+    } catch (err) {
+      showError(T[lang][err.message] ? err.message : 'errServer');
+      btn.disabled = false;
+      btn.textContent = t('send');
+    }
+  });
+</script>
+</body>
+</html>
