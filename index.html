@@ -72,6 +72,7 @@
   .privacy summary { cursor: pointer; font-weight: 700; font-size: 16px; }
   .privacy h3 { font-size: 15px; margin: 14px 0 4px; }
   .privacy p { margin: 0 0 6px; }
+  .visits { text-align: center; color: var(--muted); font-size: 13px; margin: 4px 0 0; min-height: 18px; }
   .msg { margin-top: 14px; padding: 12px; border-radius: 8px; display: none; }
   .msg.err { display: block; background: rgba(192,57,43,.1); color: var(--err); }
   .done { text-align: center; display: none; }
@@ -301,6 +302,7 @@
       <h3 data-t="pv6h"></h3><p data-t="pv6"></p>
     </details>
   </section>
+  <p class="visits" id="visits"></p>
 </div>
 
 <script>
@@ -351,7 +353,8 @@
       pv5h: 'Ihre Rechte',
       pv5: 'Auskunft, Berichtigung, Löschung und Widerruf der Einwilligung jederzeit per E-Mail an die oben genannte Adresse. Sie können sich außerdem bei der Datenschutz-Aufsichtsbehörde beschweren (Unabhängiges Landeszentrum für Datenschutz Schleswig-Holstein).',
       pv6h: 'Cookies und Tracking',
-      pv6: 'Keine. Nur die gewählte Sprache wird lokal in Ihrem Browser gespeichert.',
+      pv6: 'Keine. Nur die gewählte Sprache wird lokal in Ihrem Browser gespeichert. Es wird lediglich gezählt, wie oft die Seite aufgerufen wird – ohne Speicherung personenbezogener Daten.',
+      visitsLabel: 'Besuche dieser Seite: {n}',
       roleQ: 'Wer sind Sie?',
       roleParent: 'Mama / Papa',
       rolePlayer: 'Spielerin (ich spiele selbst in der Mannschaft)',
@@ -434,7 +437,8 @@
       pv5h: 'Twoje prawa',
       pv5: 'Wgląd, poprawienie, usunięcie danych i odwołanie zgody w każdej chwili – mailem na adres powyżej. Możesz też złożyć skargę do urzędu ochrony danych (Unabhängiges Landeszentrum für Datenschutz Schleswig-Holstein).',
       pv6h: 'Ciasteczka i śledzenie',
-      pv6: 'Brak. Tylko wybrany język jest zapisywany lokalnie w Twojej przeglądarce.',
+      pv6: 'Brak. Tylko wybrany język jest zapisywany lokalnie w Twojej przeglądarce. Liczymy jedynie, ile razy strona została otwarta – bez zapisywania danych osobowych.',
+      visitsLabel: 'Wejścia na stronę: {n}',
       roleQ: 'Kim jesteś?',
       roleParent: 'Rodzic (mama / tata)',
       rolePlayer: 'Zawodniczka (sama gram w drużynie)',
@@ -493,6 +497,7 @@
     document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
     document.title = t('title');
     if (document.getElementById('echeck')) checkEmail();
+    if (typeof showVisits === 'function' && document.getElementById('visits')) showVisits();
     if (document.getElementById('stepcap')) document.getElementById('stepcap').textContent = t('step' + (step + 1));
   }
 
@@ -569,6 +574,24 @@
     $('playerNote').style.display = player ? 'block' : 'none';
     $('parentWrap').style.display = player ? 'flex' : 'none';
   }));
+
+  // Licznik wejść: raz na otwarcie strony w danej karcie (odświeżanie nie nabija)
+  let visitTotal = null;
+  function showVisits() { if (visitTotal != null) $('visits').textContent = t('visitsLabel').replace('{n}', visitTotal); }
+  (async () => {
+    if (!CONFIG.scriptUrl) return;
+    try { if (sessionStorage.getItem('counted') === '1') return; } catch (e) {}
+    try {
+      const res = await fetch(CONFIG.scriptUrl, { method: 'POST', body: JSON.stringify({ action: 'visit' }) });
+      const out = await res.json();
+      if (out.ok && out.visits) {
+        visitTotal = out.visits.total;
+        try { sessionStorage.setItem('counted', '1'); sessionStorage.setItem('visitTotal', visitTotal); } catch (e) {}
+        showVisits();
+      }
+    } catch (e) {}
+  })();
+  try { const v = sessionStorage.getItem('visitTotal'); if (v) { visitTotal = v; } } catch (e) {}
 
   $('club').textContent = CONFIG.clubName;
   if (!CONFIG.scriptUrl) $('demo').style.display = 'block';

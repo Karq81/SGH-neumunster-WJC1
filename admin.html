@@ -49,7 +49,7 @@
   <div id="result">
     <div class="card">
       <div class="row" style="justify-content: space-between; align-items: center;">
-        <strong id="count"></strong>
+        <div><strong id="count"></strong><div class="muted" id="visits"></div></div>
         <div class="row">
           <button type="button" id="copy">Kopiuj wszystkie maile</button>
           <button type="button" class="sec" id="refresh">Odśwież</button>
@@ -90,6 +90,9 @@
       }
       try { localStorage.setItem('adminKey', key); } catch (e) {}
       $('count').textContent = 'Osób na liście: ' + data.count;
+      $('visits').textContent = data.visits
+        ? 'Wejścia na stronę – łącznie: ' + data.visits.total + ', dzisiaj: ' + data.visits.today
+        : 'Licznik wejść: wklej nowy skrypt w Google (Wdróż → Nowa wersja).';
       $('emails').value = data.emails.join(', ');
       $('rows').replaceChildren(...data.people.map(p => {
         const row = document.createElement('div');
